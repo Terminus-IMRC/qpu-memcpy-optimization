@@ -1,0 +1,7 @@
+*.o
+*.qasm2
+*.qbin
+*.qhex
+main
+
+.*.swp
