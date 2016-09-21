@@ -1,0 +1,69 @@
+;#
+;# Copyright (c) 2016 Sugizaki Yukimasa
+;# All rights reserved.
+;#
+;# This software is licensed under a Modified (3-Clause) BSD License.
+;# You should have received a copy of this license along with this
+;# software. If not, contact the copyright holder above.
+;#
+
+define(`MEM_SRC_RA', `ra1')
+define(`C_256_RA', `ra2')
+define(`N_RB', `rb0')
+define(`C_256_RB', `rb1')
+define(`MEM_DEST_RB', `rb2')
+define(`TMP0_R', `r0')
+define(`C_1_R', `r1')
+
+changequote(`', `')
+
+alu cond_add=al op_add=or waddr_add=MEM_DEST_RB ws=1 raddr_a=uniform_read add_a=ra add_b=ra
+alu cond_add=al op_add=or waddr_add=MEM_SRC_RA raddr_a=uniform_read add_a=ra add_b=ra
+alu cond_add=al op_add=or waddr_add=N_RB ws=1 raddr_a=uniform_read add_a=ra add_b=ra
+
+li cond_add=al cond_mul=al waddr_add=C_256_RA waddr_mul=C_256_RB imm=256
+li cond_add=al waddr_add=C_1_R imm=1
+
+;                                                + DMA load setup
+;                                                | + width = 32bit
+;                                                | |   + mpitch = 8 * 2 ^ 3 = 64 = 16 * (32 / 8)
+;                                                | |   |    + rowlen = 16
+;                                                | |   |    |    + nrows = 16
+;                                                | |   |    |    |    + vpitch = 1
+;                                                | |   |    |    |    |    + 0:horiz 1:vert
+li cond_add=al waddr_add=vpmvcd_rd_setup imm=`0b_1_000_0011_0000_0000_0001_0__0_000000_0000`
+
+;                                                + DMA store setup
+;                                                |  + units = 16
+;                                                |  |       + depth = 16
+;                                                |  |       |         + 0:vert 1:horiz
+;                                                |  |       |         |  + vpmbase_y = 0
+;                                                |  |       |         |  |       + vpmbase_x = 0
+;                                                |  |       |         |  |       |     + width = 32bit
+li cond_mul=al waddr_mul=vpmvcd_wr_setup imm=`0b_10_0010000_0010000_0_1__0000000_0000__000`
+
+:loop
+	; N_RB = N_RB - 1 = N_RB - C_1_R with setting flags
+	;  and vpm_ld_addr = MEM_SRC_RA
+	alu cond_add=al cond_mul=al op_add=sub op_mul=v8min sf=1 waddr_add=N_RB waddr_mul=vpm_ld_addr ws=1 raddr_a=MEM_SRC_RA raddr_b=N_RB add_a=rb add_b=C_1_R mul_a=ra mul_b=ra
+
+	; Read vpm_ld_wait
+	;  and trigger an interrupt if N_RB is 0
+	;  and vpm_st_addr = MEM_DEST_RB
+	alu cond_add=zs cond_mul=al op_add=or op_mul=v8min waddr_add=host_int waddr_mul=vpm_st_addr raddr_a=vpm_ld_wait raddr_b=MEM_DEST_RB add_a=ra add_b=rb mul_a=rb mul_b=rb
+
+	bra cond_br=allzc rel=1 imm=:loop
+	; 3 delay slots {
+		; MEM_DEST_RB = MEM_DEST_RB + 256 = MEM_DEST_RB + C_256_RA
+		alu cond_add=al op_add=add waddr_add=MEM_DEST_RB ws=1 raddr_a=C_256_RA raddr_b=MEM_DEST_RB add_a=ra add_b=rb
+
+		; MEM_SRC_RA = MEM_SRC_RA + 256 = MEM_SRC_RA + C_256_RB
+		alu cond_add=al op_add=add waddr_add=MEM_SRC_RA raddr_a=MEM_SRC_RA raddr_b=C_256_RB add_a=ra add_b=rb
+
+		; Read vpm_st_wait
+		alu cond_add=al op_add=or raddr_b=vpm_st_wait add_a=rb add_b=rb
+	; }
+
+alu sig=pe
+alu
+alu
