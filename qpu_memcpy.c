@@ -22,12 +22,14 @@ void qpu_memcpy_init()
 	vc4vec_mem_alloc(&mem_unif, 1024 * (32 / 8));
 	cpu_memcpy_1_init();
 	cpu_memcpy_2_init();
+	cpu_memcpy_3_init();
 	qpu_memcpy_1_init();
 }
 
 void qpu_memcpy_finalize()
 {
 	qpu_memcpy_1_finalize();
+	cpu_memcpy_3_finalize();
 	cpu_memcpy_2_finalize();
 	cpu_memcpy_1_finalize();
 	vc4vec_mem_free(&mem_unif);
@@ -49,6 +51,17 @@ void qpu_memcpy_launch(float *time, float *flops, int (*qpu_memcpy_n)(struct vc4
 
 	if (memcmp(dest->cpu_addr, src->cpu_addr, n) != 0) {
 		fprintf(stderr, "%s:%d: error: dest and src differ\n", __FILE__, __LINE__);
+		{
+			size_t i;
+			unsigned *out = dest->cpu_addr, *in = src->cpu_addr;
+
+			for (i = 0; i < n / sizeof(*out); i ++) {
+				if (out[i] != in[i]) {
+					fprintf(stderr, "%s:%d: The differ is at i=%d\n", __FILE__, __LINE__, i);
+					break;
+				}
+			}
+		}
 		exit(EXIT_FAILURE);
 	}
 

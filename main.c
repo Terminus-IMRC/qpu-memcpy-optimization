@@ -51,6 +51,10 @@ int main()
 	printf("cpu_memcpy_2: %g [s], %g [flop/s]\n", time, flops);
 
 	rand_mem(&src, mem_size);
+	qpu_memcpy_launch(&time, &flops, cpu_memcpy_3, &dest, &src, mem_size);
+	printf("cpu_memcpy_3: %g [s], %g [flop/s]\n", time, flops);
+
+	rand_mem(&src, mem_size);
 	qpu_memcpy_launch(&time, &flops, qpu_memcpy_1, &dest, &src, mem_size);
 	printf("qpu_memcpy_1: %g [s], %g [flop/s]\n", time, flops);
 
