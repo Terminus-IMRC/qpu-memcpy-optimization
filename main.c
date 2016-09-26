@@ -32,6 +32,7 @@ int main()
 	float time, flops;
 
 	vc4vec_init();
+	atexit(vc4vec_finalize);
 	vc4vec_mem_alloc(&dest, mem_size);
 	vc4vec_mem_alloc(&src, mem_size);
 	qpu_memcpy_init();
@@ -62,6 +63,6 @@ int main()
 	qpu_memcpy_finalize();
 	vc4vec_mem_free(&src);
 	vc4vec_mem_free(&dest);
-	vc4vec_finalize();
+	/* vc4vec_finalize was registered to atexit, so it will be called after this return. */
 	return 0;
 }
