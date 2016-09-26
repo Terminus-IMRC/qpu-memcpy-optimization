@@ -24,10 +24,12 @@ void qpu_memcpy_init()
 	cpu_memcpy_2_init();
 	cpu_memcpy_3_init();
 	qpu_memcpy_1_init();
+	qpu_memcpy_2_init();
 }
 
 void qpu_memcpy_finalize()
 {
+	qpu_memcpy_2_finalize();
 	qpu_memcpy_1_finalize();
 	cpu_memcpy_3_finalize();
 	cpu_memcpy_2_finalize();

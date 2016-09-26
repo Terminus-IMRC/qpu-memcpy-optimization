@@ -59,6 +59,10 @@ int main()
 	qpu_memcpy_launch(&time, &flops, qpu_memcpy_1, &dest, &src, mem_size);
 	printf("qpu_memcpy_1: %g [s], %g [flop/s]\n", time, flops);
 
+	rand_mem(&src, mem_size);
+	qpu_memcpy_launch(&time, &flops, qpu_memcpy_2, &dest, &src, mem_size);
+	printf("qpu_memcpy_2: %g [s], %g [flop/s]\n", time, flops);
+
 
 	qpu_memcpy_finalize();
 	vc4vec_mem_free(&src);

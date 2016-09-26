@@ -34,6 +34,10 @@
 	void qpu_memcpy_1_finalize();
 	int qpu_memcpy_1(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n);
 
+	void qpu_memcpy_2_init();
+	void qpu_memcpy_2_finalize();
+	int qpu_memcpy_2(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n);
+
 	extern struct vc4vec_mem mem_unif;
 
 #define QPU_MEMCPY_TIMEOUT 100e3
