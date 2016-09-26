@@ -33,7 +33,9 @@ int qpu_memcpy_1(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n)
 {
 	unsigned *p;
 
-	if ((n < 256) || (n % 256 != 0)) {
+	/* 1024 = 16 * 16 * (32 / 8) */
+
+	if ((n < 1024) || (n % 1024 != 0)) {
 		errno = EINVAL;
 		return -1;
 	}
@@ -41,7 +43,7 @@ int qpu_memcpy_1(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n)
 	p = mem_unif.cpu_addr;
 	*p++ = dest->gpu_addr;
 	*p++ = src->gpu_addr;
-	*p++ = n / 256;
+	*p++ = n / 1024;
 
 	launch_qpu_job_mailbox(1, 0, QPU_MEMCPY_TIMEOUT, mem_unif.gpu_addr, mem_code.gpu_addr);
 

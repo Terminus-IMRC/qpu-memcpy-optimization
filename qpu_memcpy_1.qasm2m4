@@ -8,9 +8,9 @@
 ;#
 
 define(`MEM_SRC_RA', `ra1')
-define(`C_256_RA', `ra2')
+define(`C_1024_RA', `ra2')
 define(`N_RB', `rb0')
-define(`C_256_RB', `rb1')
+define(`C_1024_RB', `rb1')
 define(`MEM_DEST_RB', `rb2')
 define(`TMP0_R', `r0')
 define(`C_1_R', `r1')
@@ -21,7 +21,7 @@ alu cond_add=al op_add=or waddr_add=MEM_DEST_RB ws=1 raddr_a=uniform_read add_a=
 alu cond_add=al op_add=or waddr_add=MEM_SRC_RA raddr_a=uniform_read add_a=ra add_b=ra
 alu cond_add=al op_add=or waddr_add=N_RB ws=1 raddr_a=uniform_read add_a=ra add_b=ra
 
-li cond_add=al cond_mul=al waddr_add=C_256_RA waddr_mul=C_256_RB imm=256
+li cond_add=al cond_mul=al waddr_add=C_1024_RA waddr_mul=C_1024_RB imm=1024
 li cond_add=al waddr_add=C_1_R imm=1
 
 ;                                                + DMA load setup
@@ -54,11 +54,11 @@ li cond_mul=al waddr_mul=vpmvcd_wr_setup imm=`0b_10_0010000_0010000_0_1__0000000
 
 	bra cond_br=allzc rel=1 imm=:loop
 	; 3 delay slots {
-		; MEM_DEST_RB = MEM_DEST_RB + 256 = MEM_DEST_RB + C_256_RA
-		alu cond_add=al op_add=add waddr_add=MEM_DEST_RB ws=1 raddr_a=C_256_RA raddr_b=MEM_DEST_RB add_a=ra add_b=rb
+		; MEM_DEST_RB = MEM_DEST_RB + 1024 = MEM_DEST_RB + C_1024_RA
+		alu cond_add=al op_add=add waddr_add=MEM_DEST_RB ws=1 raddr_a=C_1024_RA raddr_b=MEM_DEST_RB add_a=ra add_b=rb
 
-		; MEM_SRC_RA = MEM_SRC_RA + 256 = MEM_SRC_RA + C_256_RB
-		alu cond_add=al op_add=add waddr_add=MEM_SRC_RA raddr_a=MEM_SRC_RA raddr_b=C_256_RB add_a=ra add_b=rb
+		; MEM_SRC_RA = MEM_SRC_RA + 1024 = MEM_SRC_RA + C_1024_RB
+		alu cond_add=al op_add=add waddr_add=MEM_SRC_RA raddr_a=MEM_SRC_RA raddr_b=C_1024_RB add_a=ra add_b=rb
 
 		; Read vpm_st_wait
 		alu cond_add=al op_add=or raddr_b=vpm_st_wait add_a=rb add_b=rb
