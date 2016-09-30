@@ -215,13 +215,8 @@ alu cond_add=al op_add=or waddr_add=vpmvcd_wr_setup ws=1 raddr_a=VPM_WRITE_SETUP
 	alu cond_add=al op_add=or waddr_add=vpm_st_addr ws=1 raddr_a=MEM_DEST_RA add_a=ra add_b=ra
 
 	; vpm_ld_addr = MEM_SRC_RA
-	alu cond_add=al op_add=or waddr_add=vpm_ld_addr raddr_a=MEM_SRC_RA add_a=ra add_b=ra
-
-	; MEM_DEST_RA = MEM_DEST_RA + 2048
-	alu cond_add=al op_add=add waddr_add=MEM_DEST_RA raddr_a=MEM_DEST_RA raddr_b=C_2048_RB add_a=ra add_b=rb
-
-	; TMP0_R = MEM_SRC_RA + 1024
-	alu cond_add=al op_add=add waddr_add=TMP0_R raddr_a=MEM_SRC_RA raddr_b=C_1024_RB add_a=ra add_b=rb
+	;  and TMP0_R = MEM_SRC_RA + 1024
+	alu cond_add=al cond_mul=al op_add=add op_mul=v8min waddr_add=TMP0_R waddr_mul=vpm_ld_addr ws=1 raddr_a=MEM_SRC_RA raddr_b=C_1024_RB add_a=ra add_b=rb mul_a=ra mul_b=ra
 
 	; tmu0s = TMP0_R
 	;  and TMP0_R = TMP0_R + 64 = TMP0_R + 16 * 4
@@ -268,9 +263,11 @@ alu cond_add=al op_add=or waddr_add=vpmvcd_wr_setup ws=1 raddr_a=VPM_WRITE_SETUP
 	alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
 	alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
 	alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
-	alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
+	;  and MEM_DEST_RA = MEM_DEST_RA + 2048
+	alu sig=ldtmu1 cond_add=al cond_mul=al op_add=add op_mul=v8min waddr_add=MEM_DEST_RA waddr_mul=vpm_write raddr_a=MEM_DEST_RA raddr_b=C_2048_RB add_a=ra add_b=rb mul_a=r4 mul_b=r4
 	;  and N_RA = N_RA - 1 with setting flags
 	alu cond_add=al cond_mul=al sf=1 op_add=sub op_mul=v8min waddr_add=N_RA waddr_mul=vpm_write raddr_a=N_RA sig=simm simm=1 add_a=ra add_b=rb mul_a=r4 mul_b=r4
+
 
 	; store: y = 32
 	alu cond_add=al op_add=or waddr_add=vpmvcd_wr_setup ws=1 raddr_a=VPM_DMA_STORE_SETUP_32_RA add_a=ra add_b=ra
@@ -289,13 +286,8 @@ alu cond_add=al op_add=or waddr_add=vpmvcd_wr_setup ws=1 raddr_a=VPM_WRITE_SETUP
 	alu cond_add=al op_add=or waddr_add=vpm_st_addr ws=1 raddr_a=MEM_DEST_RA add_a=ra add_b=ra
 
 	; vpm_ld_addr = MEM_SRC_RA
-	alu cond_add=al op_add=or waddr_add=vpm_ld_addr raddr_a=MEM_SRC_RA add_a=ra add_b=ra
-
-	; MEM_DEST_RA = MEM_DEST_RA + 2048
-	alu cond_add=al op_add=add waddr_add=MEM_DEST_RA raddr_a=MEM_DEST_RA raddr_b=C_2048_RB add_a=ra add_b=rb
-
-	; TMP0_R = MEM_SRC_RA + 1024
-	alu cond_add=al op_add=add waddr_add=TMP0_R raddr_a=MEM_SRC_RA raddr_b=C_1024_RB add_a=ra add_b=rb
+	;  and TMP0_R = MEM_SRC_RA + 1024
+	alu cond_add=al cond_mul=al op_add=add op_mul=v8min waddr_add=TMP0_R waddr_mul=vpm_ld_addr ws=1 raddr_a=MEM_SRC_RA raddr_b=C_1024_RB add_a=ra add_b=rb mul_a=ra mul_b=ra
 
 	; tmu0s = TMP0_R
 	;  and TMP0_R = TMP0_R + 64 = TMP0_R + 16 * 4
@@ -342,7 +334,8 @@ alu cond_add=al op_add=or waddr_add=vpmvcd_wr_setup ws=1 raddr_a=VPM_WRITE_SETUP
 	alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
 	alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
 	alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
-	alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
+	;  and MEM_DEST_RA = MEM_DEST_RA + 2048
+	alu sig=ldtmu1 cond_add=al cond_mul=al op_add=add op_mul=v8min waddr_add=MEM_DEST_RA waddr_mul=vpm_write raddr_a=MEM_DEST_RA raddr_b=C_2048_RB add_a=ra add_b=rb mul_a=r4 mul_b=r4
 	alu            cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
 
 	; Loop if zc
@@ -367,13 +360,8 @@ alu cond_add=al op_add=or raddr_a=vpm_ld_wait raddr_b=vpm_st_wait add_a=ra add_b
 alu cond_add=al op_add=or waddr_add=vpm_st_addr ws=1 raddr_a=MEM_DEST_RA add_a=ra add_b=ra
 
 ; vpm_ld_addr = MEM_SRC_RA
-alu cond_add=al op_add=or waddr_add=vpm_ld_addr raddr_a=MEM_SRC_RA add_a=ra add_b=ra
-
-; MEM_DEST_RA = MEM_DEST_RA + 2048
-alu cond_add=al op_add=add waddr_add=MEM_DEST_RA raddr_a=MEM_DEST_RA raddr_b=C_2048_RB add_a=ra add_b=rb
-
-; TMP0_R = MEM_SRC_RA + 1024
-alu cond_add=al op_add=add waddr_add=TMP0_R raddr_a=MEM_SRC_RA raddr_b=C_1024_RB add_a=ra add_b=rb
+;  and TMP0_R = MEM_SRC_RA + 1024
+alu cond_add=al cond_mul=al op_add=add op_mul=v8min waddr_add=TMP0_R waddr_mul=vpm_ld_addr ws=1 raddr_a=MEM_SRC_RA raddr_b=C_1024_RB add_a=ra add_b=rb mul_a=ra mul_b=ra
 
 ; tmu0s = TMP0_R
 ;  and TMP0_R = TMP0_R + 64 = TMP0_R + 16 * 4
@@ -420,7 +408,8 @@ alu sig=ldtmu0 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
 alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
 alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
 alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
-alu sig=ldtmu1 cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
+;  and MEM_DEST_RA = MEM_DEST_RA + 2048
+alu sig=ldtmu1 cond_add=al cond_mul=al op_add=add op_mul=v8min waddr_add=MEM_DEST_RA waddr_mul=vpm_write raddr_a=MEM_DEST_RA raddr_b=C_2048_RB add_a=ra add_b=rb mul_a=r4 mul_b=r4
 alu            cond_add=al op_add=or waddr_add=vpm_write add_a=r4 add_b=r4
 
 ; store: y = 32
