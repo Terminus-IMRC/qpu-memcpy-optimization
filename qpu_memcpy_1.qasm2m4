@@ -42,6 +42,11 @@ li cond_add=al waddr_add=vpmvcd_rd_setup imm=`0b_1_000_0011_0000_0000_0001_0__0_
 ;                                                |  |       |         |  |       |     + width = 32bit
 li cond_mul=al waddr_mul=vpmvcd_wr_setup imm=`0b_10_0010000_0010000_0_1__0000000_0000__000`
 
+;                                                + DMA store stride setup
+;                                                |                + blockmode = 0
+;                                                |                |     + stride = 0
+li cond_mul=al waddr_mul=vpmvcd_wr_setup imm=`0b_11_0000000000000_0_000_0000000000000`
+
 :loop
 	; N_RB = N_RB - 1 = N_RB - C_1_R with setting flags
 	;  and vpm_ld_addr = MEM_SRC_RA
