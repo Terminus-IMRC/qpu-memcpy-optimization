@@ -22,6 +22,7 @@ static void rand_mem(struct vc4vec_mem *mem, size_t n)
 	unsigned *p = mem->cpu_addr;
 	size_t i, len = n / sizeof(*p);
 
+#pragma omp parallel for private(i) firstprivate(p, len)
 	for (i = 0; i < len; i ++)
 		p[i] = random();
 }

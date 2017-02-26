@@ -13,6 +13,7 @@ all: main
 main: LDLIBS += -lvc4vec
 main: main.o qpu_memcpy.o cpu_memcpy_1.o cpu_memcpy_2.o cpu_memcpy_3.o qpu_memcpy_1.o qpu_memcpy_2.o qpu_memcpy_3.o
 
+main.o: CFLAGS += -fopenmp
 cpu_memcpy_2.o: CFLAGS += -fopenmp
 cpu_memcpy_3.o: CFLAGS += -fopenmp
 qpu_memcpy_1.o: qpu_memcpy_1.qhex
