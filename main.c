@@ -29,7 +29,7 @@ static void rand_mem(struct vc4vec_mem *mem, size_t n)
 int main()
 {
 	struct vc4vec_mem dest, src;
-	float time, flops;
+	float time, Bps;
 
 	vc4vec_init();
 	atexit(vc4vec_finalize);
@@ -44,28 +44,28 @@ int main()
 
 
 	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &flops, cpu_memcpy_1, &dest, &src, mem_size);
-	printf("cpu_memcpy_1: %g [s], %g [flop/s]\n", time, flops);
+	qpu_memcpy_launch(&time, &Bps, cpu_memcpy_1, &dest, &src, mem_size);
+	printf("cpu_memcpy_1: %g [s], %g [B/s]\n", time, Bps);
 
 	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &flops, cpu_memcpy_2, &dest, &src, mem_size);
-	printf("cpu_memcpy_2: %g [s], %g [flop/s]\n", time, flops);
+	qpu_memcpy_launch(&time, &Bps, cpu_memcpy_2, &dest, &src, mem_size);
+	printf("cpu_memcpy_2: %g [s], %g [B/s]\n", time, Bps);
 
 	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &flops, cpu_memcpy_3, &dest, &src, mem_size);
-	printf("cpu_memcpy_3: %g [s], %g [flop/s]\n", time, flops);
+	qpu_memcpy_launch(&time, &Bps, cpu_memcpy_3, &dest, &src, mem_size);
+	printf("cpu_memcpy_3: %g [s], %g [B/s]\n", time, Bps);
 
 	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &flops, qpu_memcpy_1, &dest, &src, mem_size);
-	printf("qpu_memcpy_1: %g [s], %g [flop/s]\n", time, flops);
+	qpu_memcpy_launch(&time, &Bps, qpu_memcpy_1, &dest, &src, mem_size);
+	printf("qpu_memcpy_1: %g [s], %g [B/s]\n", time, Bps);
 
 	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &flops, qpu_memcpy_2, &dest, &src, mem_size);
-	printf("qpu_memcpy_2: %g [s], %g [flop/s]\n", time, flops);
+	qpu_memcpy_launch(&time, &Bps, qpu_memcpy_2, &dest, &src, mem_size);
+	printf("qpu_memcpy_2: %g [s], %g [B/s]\n", time, Bps);
 
 	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &flops, qpu_memcpy_3, &dest, &src, mem_size);
-	printf("qpu_memcpy_3: %g [s], %g [flop/s]\n", time, flops);
+	qpu_memcpy_launch(&time, &Bps, qpu_memcpy_3, &dest, &src, mem_size);
+	printf("qpu_memcpy_3: %g [s], %g [B/s]\n", time, Bps);
 
 
 	qpu_memcpy_finalize();

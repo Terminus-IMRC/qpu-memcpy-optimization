@@ -39,7 +39,7 @@ void qpu_memcpy_finalize()
 	vc4vec_mem_free(&mem_unif);
 }
 
-void qpu_memcpy_launch(float *time, float *flops, int (*qpu_memcpy_n)(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n), struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n)
+void qpu_memcpy_launch(float *time, float *Bps, int (*qpu_memcpy_n)(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n), struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n)
 {
 	struct timeval start, end;
 	int reti;
@@ -70,5 +70,5 @@ void qpu_memcpy_launch(float *time, float *flops, int (*qpu_memcpy_n)(struct vc4
 	}
 
 	*time = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) * 1e-6;
-	*flops = n / *time;
+	*Bps = n / *time;
 }

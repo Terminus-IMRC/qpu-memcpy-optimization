@@ -16,7 +16,7 @@
 	void qpu_memcpy_init();
 	void qpu_memcpy_finalize();
 
-	void qpu_memcpy_launch(float *time, float *flops, int (*qpu_memcpy_n)(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n), struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n);
+	void qpu_memcpy_launch(float *time, float *Bps, int (*qpu_memcpy_n)(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n), struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n);
 
 	void cpu_memcpy_1_init();
 	void cpu_memcpy_1_finalize();
