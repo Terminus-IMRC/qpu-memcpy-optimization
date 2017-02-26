@@ -16,33 +16,33 @@
 	void qpu_memcpy_init();
 	void qpu_memcpy_finalize();
 
-	void qpu_memcpy_launch(float *time, float *Bps, int (*qpu_memcpy_n)(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n), struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n);
+	void qpu_memcpy_launch(float *time, float *Bps, int (*qpu_memcpy_n)(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n), unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n);
 
 	void cpu_memcpy_1_init();
 	void cpu_memcpy_1_finalize();
-	int cpu_memcpy_1(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n);
+	int cpu_memcpy_1(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n);
 
 	void cpu_memcpy_2_init();
 	void cpu_memcpy_2_finalize();
-	int cpu_memcpy_2(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n);
+	int cpu_memcpy_2(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n);
 
 	void cpu_memcpy_3_init();
 	void cpu_memcpy_3_finalize();
-	int cpu_memcpy_3(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n);
+	int cpu_memcpy_3(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n);
 
 	void qpu_memcpy_1_init();
 	void qpu_memcpy_1_finalize();
-	int qpu_memcpy_1(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n);
+	int qpu_memcpy_1(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n);
 
 	void qpu_memcpy_2_init();
 	void qpu_memcpy_2_finalize();
-	int qpu_memcpy_2(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n);
+	int qpu_memcpy_2(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n);
 
 	void qpu_memcpy_3_init();
 	void qpu_memcpy_3_finalize();
-	int qpu_memcpy_3(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n);
+	int qpu_memcpy_3(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n);
 
-	extern struct vc4vec_mem mem_unif;
+	extern unsigned *mem_unif_cpu, mem_unif_gpu;
 
 #define QPU_MEMCPY_TIMEOUT 100e3
 

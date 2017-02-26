@@ -17,11 +17,14 @@ static unsigned code[] = {
 };
 static size_t code_size = sizeof(code);
 static struct vc4vec_mem mem_code;
+static unsigned *mem_code_cpu, mem_code_gpu;
 
 void qpu_memcpy_1_init()
 {
 	vc4vec_mem_alloc(&mem_code, code_size);
-	memcpy(mem_code.cpu_addr, code, code_size);
+	mem_code_cpu = mem_code.cpu_addr;
+	mem_code_gpu = mem_code.gpu_addr;
+	memcpy(mem_code_cpu, code, code_size);
 }
 
 void qpu_memcpy_1_finalize()
@@ -29,7 +32,7 @@ void qpu_memcpy_1_finalize()
 	vc4vec_mem_free(&mem_code);
 }
 
-int qpu_memcpy_1(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n)
+int qpu_memcpy_1(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n)
 {
 	unsigned *p;
 
@@ -40,12 +43,13 @@ int qpu_memcpy_1(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n)
 		return -1;
 	}
 
-	p = mem_unif.cpu_addr;
-	*p++ = dest->gpu_addr;
-	*p++ = src->gpu_addr;
+	(void) dest_cpu; (void) src_cpu;
+	p = mem_unif_cpu;
+	*p++ = dest_gpu;
+	*p++ = src_gpu;
 	*p++ = n / 1024;
 
-	launch_qpu_job_mailbox(1, 0, QPU_MEMCPY_TIMEOUT, mem_unif.gpu_addr, mem_code.gpu_addr);
+	launch_qpu_job_mailbox(1, 0, QPU_MEMCPY_TIMEOUT, mem_unif_gpu, mem_code_gpu);
 
 	return 0;
 }

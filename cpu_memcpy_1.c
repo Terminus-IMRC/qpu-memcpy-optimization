@@ -19,8 +19,9 @@ void cpu_memcpy_1_finalize()
 {
 }
 
-int cpu_memcpy_1(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n)
+int cpu_memcpy_1(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n)
 {
-	memcpy(dest->cpu_addr, src->cpu_addr, n);
+	(void) dest_gpu; (void) src_gpu;
+	memcpy(dest_cpu, src_cpu, n);
 	return 0;
 }

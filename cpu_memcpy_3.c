@@ -20,18 +20,18 @@ void cpu_memcpy_3_finalize()
 {
 }
 
-int cpu_memcpy_3(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n)
+int cpu_memcpy_3(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n)
 {
 	if (n % sizeof(unsigned) != 0) {
 		errno = EINVAL;
 		return -1;
 	}
 
+	(void) dest_gpu; (void) src_gpu;
 #pragma omp parallel
 	{
 		int thread_num, num_threads;
 		size_t offset, len;
-		uint8_t *out = dest->cpu_addr, *in = src->cpu_addr;
 
 		thread_num = omp_get_thread_num();
 		num_threads = omp_get_num_threads();
@@ -41,7 +41,7 @@ int cpu_memcpy_3(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n)
 		if (thread_num == num_threads - 1)
 			len = n - (n / num_threads) * (num_threads - 1);
 
-		memcpy(out + offset, in + offset, len);
+		memcpy(dest_cpu + offset, src_cpu + offset, len);
 	}
 
 	return 0;

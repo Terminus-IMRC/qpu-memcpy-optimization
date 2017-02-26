@@ -17,10 +17,10 @@
 
 static const int mem_size = 1024 * 1024 * 30;
 
-static void rand_mem(struct vc4vec_mem *mem, size_t n)
+static void rand_mem(unsigned *p, size_t n)
 {
-	unsigned *p = mem->cpu_addr;
-	size_t i, len = n / sizeof(*p);
+	size_t i;
+	const size_t len = n / sizeof(*p);
 
 #pragma omp parallel for private(i) firstprivate(p, len)
 	for (i = 0; i < len; i ++)
@@ -30,12 +30,18 @@ static void rand_mem(struct vc4vec_mem *mem, size_t n)
 int main()
 {
 	struct vc4vec_mem dest, src;
+	unsigned *dest_cpu, *src_cpu;
+	unsigned dest_gpu, src_gpu;
 	float time, Bps;
 
 	vc4vec_init();
 	atexit(vc4vec_finalize);
 	vc4vec_mem_alloc(&dest, mem_size);
 	vc4vec_mem_alloc(&src, mem_size);
+	dest_cpu = dest.cpu_addr;
+	dest_gpu = dest.gpu_addr;
+	src_cpu = src.cpu_addr;
+	src_gpu = src.gpu_addr;
 	qpu_memcpy_init();
 	{
 		struct timeval st;
@@ -44,28 +50,28 @@ int main()
 	}
 
 
-	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &Bps, cpu_memcpy_1, &dest, &src, mem_size);
+	rand_mem(src_cpu, mem_size);
+	qpu_memcpy_launch(&time, &Bps, cpu_memcpy_1, dest_cpu, dest_gpu, src_cpu, src_gpu, mem_size);
 	printf("cpu_memcpy_1: %g [s], %g [B/s]\n", time, Bps);
 
-	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &Bps, cpu_memcpy_2, &dest, &src, mem_size);
+	rand_mem(src_cpu, mem_size);
+	qpu_memcpy_launch(&time, &Bps, cpu_memcpy_2, dest_cpu, dest_gpu, src_cpu, src_gpu, mem_size);
 	printf("cpu_memcpy_2: %g [s], %g [B/s]\n", time, Bps);
 
-	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &Bps, cpu_memcpy_3, &dest, &src, mem_size);
+	rand_mem(src_cpu, mem_size);
+	qpu_memcpy_launch(&time, &Bps, cpu_memcpy_3, dest_cpu, dest_gpu, src_cpu, src_gpu, mem_size);
 	printf("cpu_memcpy_3: %g [s], %g [B/s]\n", time, Bps);
 
-	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &Bps, qpu_memcpy_1, &dest, &src, mem_size);
+	rand_mem(src_cpu, mem_size);
+	qpu_memcpy_launch(&time, &Bps, qpu_memcpy_1, dest_cpu, dest_gpu, src_cpu, src_gpu, mem_size);
 	printf("qpu_memcpy_1: %g [s], %g [B/s]\n", time, Bps);
 
-	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &Bps, qpu_memcpy_2, &dest, &src, mem_size);
+	rand_mem(src_cpu, mem_size);
+	qpu_memcpy_launch(&time, &Bps, qpu_memcpy_2, dest_cpu, dest_gpu, src_cpu, src_gpu, mem_size);
 	printf("qpu_memcpy_2: %g [s], %g [B/s]\n", time, Bps);
 
-	rand_mem(&src, mem_size);
-	qpu_memcpy_launch(&time, &Bps, qpu_memcpy_3, &dest, &src, mem_size);
+	rand_mem(src_cpu, mem_size);
+	qpu_memcpy_launch(&time, &Bps, qpu_memcpy_3, dest_cpu, dest_gpu, src_cpu, src_gpu, mem_size);
 	printf("qpu_memcpy_3: %g [s], %g [B/s]\n", time, Bps);
 
 

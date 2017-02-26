@@ -19,23 +19,21 @@ void cpu_memcpy_2_finalize()
 {
 }
 
-int cpu_memcpy_2(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n)
+int cpu_memcpy_2(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n)
 {
 	int i, len;
-	unsigned *out, *in;
 
 	if (n % sizeof(unsigned) != 0) {
 		errno = EINVAL;
 		return -1;
 	}
 
-	out = dest->cpu_addr;
-	in = src->cpu_addr;
 	len = n / sizeof(unsigned);
 
+	(void) dest_gpu; (void) src_gpu;
 #pragma omp parallel for
 	for (i = 0; i < len; i ++)
-		out[i] = in[i];
+		dest_cpu[i] = src_cpu[i];
 
 	return 0;
 }

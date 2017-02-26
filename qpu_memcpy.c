@@ -15,11 +15,14 @@
 #include <errno.h>
 #include "qpu_memcpy.h"
 
-struct vc4vec_mem mem_unif;
+static struct vc4vec_mem mem_unif;
+unsigned *mem_unif_cpu, mem_unif_gpu;
 
 void qpu_memcpy_init()
 {
 	vc4vec_mem_alloc(&mem_unif, 1024 * (32 / 8));
+    mem_unif_cpu = mem_unif.cpu_addr;
+    mem_unif_gpu = mem_unif.gpu_addr;
 	cpu_memcpy_1_init();
 	cpu_memcpy_2_init();
 	cpu_memcpy_3_init();
@@ -39,13 +42,13 @@ void qpu_memcpy_finalize()
 	vc4vec_mem_free(&mem_unif);
 }
 
-void qpu_memcpy_launch(float *time, float *Bps, int (*qpu_memcpy_n)(struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n), struct vc4vec_mem *dest, struct vc4vec_mem *src, size_t n)
+void qpu_memcpy_launch(float *time, float *Bps, int (*qpu_memcpy_n)(unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n), unsigned *dest_cpu, unsigned dest_gpu, unsigned *src_cpu, unsigned src_gpu, size_t n)
 {
 	struct timeval start, end;
 	int reti;
 
 	gettimeofday(&start, NULL);
-	reti = qpu_memcpy_n(dest, src, n);
+	reti = qpu_memcpy_n(dest_cpu, dest_gpu, src_cpu, src_gpu, n);
 	gettimeofday(&end, NULL);
 
 	if (reti == -1) {
@@ -53,14 +56,13 @@ void qpu_memcpy_launch(float *time, float *Bps, int (*qpu_memcpy_n)(struct vc4ve
 		exit(EXIT_FAILURE);
 	}
 
-	if (memcmp(dest->cpu_addr, src->cpu_addr, n) != 0) {
+	if (memcmp(dest_cpu, src_cpu, n) != 0) {
 		fprintf(stderr, "%s:%d: error: dest and src differ\n", __FILE__, __LINE__);
 		{
 			size_t i;
-			unsigned *out = dest->cpu_addr, *in = src->cpu_addr;
 
-			for (i = 0; i < n / sizeof(*out); i ++) {
-				if (out[i] != in[i]) {
+			for (i = 0; i < n / sizeof(*dest_cpu); i ++) {
+				if (dest_cpu[i] != src_cpu[i]) {
 					fprintf(stderr, "%s:%d: The differ is at i=%d\n", __FILE__, __LINE__, i);
 					break;
 				}
